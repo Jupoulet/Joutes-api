@@ -6,5 +6,6 @@ app.get('/hello', function (req, res) {
 })
 
 app.listen(process.env.PORT || 4000, function () {
+    console.log('Process.env', process.env.DATABASE_URL)
   console.log(`Example app listening on port ${process.env.PORT || 4000}!`)
 })
