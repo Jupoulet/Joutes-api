@@ -14,7 +14,7 @@ client.connect();
 
 app.use(bodyParser.json());
 app.use (require ('cors') ({
-	origin: ['http://localhost:3000', 'https://joutes.herokuapp.com/'],
+	origin: ['http://localhost:3000', 'https://joutes.herokuapp.com'],
 	credentials: true
 }))
 
