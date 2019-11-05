@@ -1,0 +1,19 @@
+version: '3'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api-joutes
+    environment:
+      - APPLICATION_HOST=localhost
+      - APPLICATION_PORT=3310
+      - DATABASE_URL=postgres://fqtwtlqpvpjznl:33e48da25e5bbfca9d0c0845cd86b7df839cd251aa2bfd37f0b1a99a59dfd627@ec2-107-21-108-37.compute-1.amazonaws.com:5432/d9fsshd4682nac
+      - DATABASE_SCHEMA=public
+      - DATABASE_SSL=true
+      - DATABASE_ENCRYPT=false
+      - AUTH_SECRET=9f5a69d1c6a9d46dc91e3eb18fdd255aac3f1684eb7aa341c8dfb89369f27c29a0fbf127662d60cb7b1e42d9c1dc5e79
+    ports:
+      - "3310:3310"
+    volumes:
+      - ./:/usr/src/app
