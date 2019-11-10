@@ -2,12 +2,12 @@ const express = require('express')
 const app = express()
 const bodyParser = require('body-parser');
 const { Client } = require('pg');
-const url = 'postgres://zclgjoulxlbvvv:ab0d17eb0bce1e3c11ffd2a8b267f96a6e7b88e13f4b26fc7680ed0ea43f3f72@ec2-174-129-253-125.compute-1.amazonaws.com:5432/d12amj2r6icmao'
-
+const url = 'postgres://julien:toto@localhost:5432/joutes'
+// e.g. postgres://user:password@host:5432/database
 const queryJoutes = 'SELECT joutes.id, created_at, score, winner.firstname as winner, loser.firstname as loser FROM joutes INNER JOIN players AS winner ON winner.id = joutes.winner_id INNER JOIN players AS loser ON loser.id = joutes.loser_id'
 const client = new Client({
   connectionString: process.env.DATABASE_URL || url,
-  ssl: true,
+  ...(process.env.DATABASE_URL && { ssl: true })
 });
 
 client.connect();
@@ -33,6 +33,16 @@ app.post('/addJoute', async function (req, res) {
     res.json({ result })
   })
 
+})
+
+app.post('/addPlayer', async function (req, res) {
+  if (!req.body) { return res.status(403).json({ error: 'Body required'})}
+  await client.query(
+    'INSERT INTO players(firstname, lastname) VALUES($1, $2) RETURNING *',
+    [req.body.firstname, req.body.lastname]
+  ).then((result) => {
+    res.json({ result })
+  })
 })
 
 app.get('/players', async function (req, res) {
