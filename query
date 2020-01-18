@@ -1,0 +1,22 @@
+CREATE TABLE 
+joutes (
+    id SERIAL PRIMARY KEY,
+    loser_id integer REFERENCES players(id),
+    winner_id integer REFERENCES players(id),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    score json
+);
+
+CREATE TABLE players (
+    firstname varchar(40),
+    lastname varchar(40),
+    id SERIAL PRIMARY KEY
+);
+
+INSERT INTO joutes (loser_id, winner_id, score) VALUES
+    (1, 2, '{ "winner": 3, "loser": 2 }'),
+    (1, 2, '{ "winner": 3, "loser": 1 }'),
+    (1, 2, '{ "winner": 3, "loser": 0 }'),
+    (1, 2, '{ "winner": 3, "loser": 2 }'),
+    (1, 2, '{ "winner": 3, "loser": 1 }'),
+    (1, 2, '{ "winner": 3, "loser": 0 }');
