@@ -2,7 +2,8 @@ const express = require('express')
 const app = express()
 const bodyParser = require('body-parser');
 const { Client } = require('pg');
-const url = 'postgres://julien:toto@localhost:5432/joutes'
+const url = `postgres://${process.env.DB_USER || 'julien'}:${process.env.DB_PASSWORD || 'toto'}@localhost:5432/joutes`
+// 'postgres://pi:root@localhost:5432/joutes
 // e.g. postgres://user:password@host:5432/database
 const queryJoutes = 'SELECT joutes.id, created_at, score, winner.firstname as winner, loser.firstname as loser FROM joutes INNER JOIN players AS winner ON winner.id = joutes.winner_id INNER JOIN players AS loser ON loser.id = joutes.loser_id'
 const client = new Client({
@@ -14,7 +15,7 @@ client.connect();
 
 app.use(bodyParser.json());
 app.use (require ('cors') ({
-		origin: ['http://localhost:3000', 'https://joutes.herokuapp.com', 'http://joutes.co'],
+		origin: ['http://localhost:3000', 'https://joutes.herokuapp.com', 'http://joutes.co', 'http://localhost:5000', 'http://192.168.1.10:3000'],
 	credentials: true
 }))
 
