@@ -14,10 +14,16 @@ const client = new Client({
 client.connect();
 
 app.use(bodyParser.json());
-app.use (require ('cors') ({
-		origin: ['http://localhost:3000', 'https://joutes.herokuapp.com', 'http://joutes.co', 'http://localhost:5000', 'http://192.168.1.10:3000'],
-	credentials: true
-}))
+
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+// app.use (require ('cors') ({
+// 		origin: ['http://localhost:3000', 'https://joutes.herokuapp.com', 'http://joutes.co', 'http://localhost:5000', 'http://192.168.1.10:3000'],
+// 	credentials: true
+// }))
 
 
 app.get('/joutes', async function (req, res) {
