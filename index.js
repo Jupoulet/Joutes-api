@@ -1,17 +1,20 @@
 const express = require('express')
 const app = express()
+const router = express.Router();
 const bodyParser = require('body-parser');
-const { Client } = require('pg');
-const url = `postgres://${process.env.DB_USER || 'julien'}:${process.env.DB_PASSWORD || 'toto'}@localhost:5432/joutes`
+global.models = require('./models');
+global.Op = models.Sequelize.Op;
+// const { Client } = require('pg');
+// const url = `postgres://${process.env.DB_USER || 'julien'}:${process.env.DB_PASSWORD || 'toto'}@localhost:5432/joutes`
 // 'postgres://pi:root@localhost:5432/joutes
 // e.g. postgres://user:password@host:5432/database
-const queryJoutes = 'SELECT joutes.id, created_at, score, winner.firstname as winner, loser.firstname as loser FROM joutes INNER JOIN players AS winner ON winner.id = joutes.winner_id INNER JOIN players AS loser ON loser.id = joutes.loser_id'
-const client = new Client({
-  connectionString: process.env.DATABASE_URL || url,
-  ...(process.env.DATABASE_URL && { ssl: true })
-});
+// const queryJoutes = 'SELECT joutes.id, created_at, score, winner.firstname as winner, loser.firstname as loser FROM joutes INNER JOIN players AS winner ON winner.id = joutes.winner_id INNER JOIN players AS loser ON loser.id = joutes.loser_id'
+// const client = new Client({
+//   connectionString: process.env.DATABASE_URL || url,
+//   ...(process.env.DATABASE_URL && { ssl: true })
+// });
 
-client.connect();
+// client.connect();
 
 app.use(bodyParser.json());
 
@@ -25,13 +28,19 @@ app.use(function(req, res, next) {
 // 	credentials: true
 // }))
 
-
-app.get('/joutes', async function (req, res) {
-  const joutes = await client.query(queryJoutes);
-  res.json({ joutes: joutes.rows });
-})
+// app.use('/twilio', require(`${process.env.PWD}/services/twilio.js`))
+app.use ('/joutes', require(`${process.env.PWD}/routes/joutes.js`))
+app.use ('/players', require(`${process.env.PWD}/routes/players.js`))
+// app.get('/joutes', async function (req, res) {
+//   const joutes = await models.joutes.findAll()
+//   return res.json({ route: 'joutes', joutes })
+//   // const joutes = await client.query(queryJoutes);
+//   res.json({ joutes: joutes.rows });
+// })
 
 app.post('/addJoute', async function (req, res) {
+  return res.json({ route: 'addJoute'})
+
   if (!req.body) { return res.status(403).json({ error: 'Body required'})}
   await client.query(
     'INSERT INTO joutes(loser_id, winner_id, score) VALUES($1, $2, $3) RETURNING *',
@@ -43,6 +52,8 @@ app.post('/addJoute', async function (req, res) {
 })
 
 app.post('/addPlayer', async function (req, res) {
+  return res.json({ route: 'addPlayer'})
+
   if (!req.body) { return res.status(403).json({ error: 'Body required'})}
   await client.query(
     'INSERT INTO players(firstname, lastname) VALUES($1, $2) RETURNING *',
@@ -53,6 +64,8 @@ app.post('/addPlayer', async function (req, res) {
 })
 
 app.get('/players', async function (req, res) {
+  return res.json({ route: 'players'})
+
   const players = await client.query('SELECT * FROM players');
   res.json({ players: players.rows })
 })
