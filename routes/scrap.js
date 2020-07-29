@@ -3,7 +3,13 @@ const scrapIt = require(`${process.env.PWD}/services/scrap`)
 
 router.route ('/')
 .get(async (req, res) => {
-    await scrapIt ()
+    console.log ('Scrap it !')
+    try {
+      await scrapIt ();
+    } catch (err) {
+      console.log (err)
+    }
+    console.log ('Done scraping')
     res.end()
 })
 
