@@ -1,9 +1,14 @@
 const puppeteer = require('puppeteer');
 const fs = require ('fs');
-const axios = require ('axios');
+const { showLastRun } = require(`${process.env.PWD}/services/lametric`)
 
 const scrapIt = async () => {
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+        ...(process.env.NODE_ENV === 'production' && {
+            args: ['--no-sandbox','--disable-setuid-sandbox'],
+            executablePath: '/usr/bin/chromium-browser'
+        })
+    });
 
     const page = await browser.newPage();
 
@@ -41,33 +46,7 @@ const scrapIt = async () => {
         data.runs.push ({ kms, date, duration, id: `${kms}-${date}-${duration}` })
         fs.writeFile (`${process.env.PWD}/assets/runs.json`, JSON.stringify(data), async (err, data) => {
             try {
-                await axios.post("http://192.168.1.20:8080/api/v2/device/notifications", {
-                    "lifeTime": 15000,
-                    "icon_type": "none",
-                    "model": {
-                        "frames": [
-                            {
-                                "icon":1253,
-                                "text":"Dernier run:"
-                            },
-                            {
-                                "icon":1253,
-                                "text": `${kms} kms, en ${duration}`
-                            }
-                        ],
-                        "sound": {
-                        "category":"notifications",
-                        "id":"positive2",
-                        "repeat":1
-                        }
-                    }
-                }, {
-                    headers: {
-                        "Authorization": "Basic ZGV2OmYyNTI3MGE0NTk1YzA3ZGZiMzZlMDM5MTljZTk4YmViNzE3NzMxM2Q1YWEwNDBjYWY4MzU0NTJkMmRkYzY0OWU=",
-                        "Content-Type": "application/json"
-                    },
-                })
-                
+                await showLastRun()
             } catch (error) {
                 console.log ('error', error)
                 

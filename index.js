@@ -4,6 +4,7 @@ const router = express.Router();
 const bodyParser = require('body-parser');
 global.models = require('./models');
 global.Op = models.Sequelize.Op;
+process.env.NODE_ENV = process.env.NODE_ENV || 'development'
 
 app.use(bodyParser.json());
 
